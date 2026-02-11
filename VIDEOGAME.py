@@ -9,20 +9,14 @@ python -m arcade.examples.starting_template
 """
 import arcade
 
-WINDOW_WIDTH = 1280
-WINDOW_HEIGHT = 720
+WINDOW_WIDTH = 540
+WINDOW_HEIGHT = 800
 WINDOW_TITLE = "RUNNING CIKEN"
 CAM_VEL = 100
+SCROLL_SPEED = 50
 
 
 class GameView(arcade.Window):
-    """
-    Main application class.
-
-    NOTE: Go ahead and delete the methods you don't need.
-    If you do need a method, delete the 'pass' and replace it
-    with your own code. Don't leave 'pass' in this program.
-    """
 
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
@@ -77,12 +71,14 @@ class GameView(arcade.Window):
                 self.background,
                 arcade.LBWH(0,WINDOW_HEIGHT/2,WINDOW_WIDTH, WINDOW_HEIGHT)
             )
+                    
+                    
             self.playerSpriteList.draw()
 
-        
+                
 
 
-        # Call draw() on all your sprite lists below
+                # Call draw() on all your sprite lists below
 
     def on_update(self, delta_time):
         """
