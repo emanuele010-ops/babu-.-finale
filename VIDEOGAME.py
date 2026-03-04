@@ -11,7 +11,7 @@ import arcade
 
 WINDOW_WIDTH = 540
 WINDOW_HEIGHT = 800
-WINDOW_TITLE = "RUNNING CIKEN"
+WINDOW_TITLE = "RUNNING CHIKEN"
 CAM_VEL = 100
 SCROLL_SPEED = 50
 
@@ -43,7 +43,7 @@ class GameView(arcade.Window):
 
         
         self.background = arcade.load_texture("../sfondo.jpg")
-
+        self.background_y = 0
         self.playerSpriteList.append(self.sprite)
 
         # If you have sprite lists, you should create them here,
@@ -61,18 +61,25 @@ class GameView(arcade.Window):
         # This command should happen before we start drawing. It will clear
         # the screen to the background color, and erase what we drew last frame.
         self.clear()
+
         with self.camera.activate():
-            # per 3 volte, a partire da self.inizio_coordinate_sfondo
-            arcade.draw_texture_rect(
-                self.background,
-                arcade.LBWH(0,-WINDOW_HEIGHT/2,WINDOW_WIDTH, WINDOW_HEIGHT)
-            )
-            arcade.draw_texture_rect(
-                self.background,
-                arcade.LBWH(0,WINDOW_HEIGHT/2,WINDOW_WIDTH, WINDOW_HEIGHT)
-            )
-                    
-                    
+
+            cam_y = self.camera.position[1]
+
+            # Trova il blocco di sfondo corrente
+            base_y = (cam_y // WINDOW_HEIGHT) * WINDOW_HEIGHT
+
+            for offset in (-1, 0, 1):
+                arcade.draw_texture_rect(
+                    self.background,
+                    arcade.LBWH(
+                        0,
+                        base_y + offset * WINDOW_HEIGHT,
+                        WINDOW_WIDTH,
+                        WINDOW_HEIGHT
+                    )
+                )
+
             self.playerSpriteList.draw()
 
                 
@@ -81,32 +88,31 @@ class GameView(arcade.Window):
                 # Call draw() on all your sprite lists below
 
     def on_update(self, delta_time):
-        """
-        All the logic to move, and the game logic goes here.
-        Normally, you'll call update() on the sprite lists that
-        need it.
-        """
-        # se la posizione del giocatore è "troppo in alto" rispetto alla posizione prec
-            # imposto la coordinata di partenza di dove disegnare lo sfondo 
-            # aggiorno l'ultima posizione
-        
 
-        print(self.camera.position)
-        
-        self.sprite.center_x += self.direction[0] * 7
-        self.sprite.center_y += self.direction[1] * 7
+        SPEED = 500
+        HORIZONTAL_SPEED = 550
 
+        # Movimento automatico verso l'alto
+        self.sprite.center_y += SPEED * delta_time
+
+        # Movimento destra/sinistra
+        self.sprite.center_x += self.direction[0] * HORIZONTAL_SPEED * delta_time
+
+        # Limiti dello schermo
+        if self.sprite.left < 0:
+            self.sprite.left = 0
+
+        if self.sprite.right > WINDOW_WIDTH:
+            self.sprite.right = WINDOW_WIDTH
+
+        # Camera segue il player
         self.camera.position = (
-            self.camera.position[0],
+            WINDOW_WIDTH / 2,
             self.sprite.center_y
         )
 
     def on_key_press(self, key, modifiers):
         
-        if key == arcade.key.UP:
-            self.direction[1] = 1
-        if key == arcade.key.DOWN:
-            self.direction[1] = -1
         if key == arcade.key.RIGHT:
             self.direction[0] = 1
         if key == arcade.key.LEFT:
@@ -114,10 +120,6 @@ class GameView(arcade.Window):
 
     def on_key_release(self, key, modifiers):
 
-        if key == arcade.key.UP:
-            self.direction[1] = 0
-        if key == arcade.key.DOWN:
-            self.direction[1] = 0
         if key == arcade.key.RIGHT:
             self.direction[0] = 0
         if key == arcade.key.LEFT:
@@ -149,7 +151,7 @@ class GameView(arcade.Window):
 
 def main():
     game = GameView(
-        WINDOW_WIDTH, WINDOW_HEIGHT, "Il mio giochino"
+        WINDOW_WIDTH, WINDOW_HEIGHT, "RUNNIG CHIKEN"
     )
     arcade.run()
 
