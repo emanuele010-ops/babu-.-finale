@@ -34,6 +34,16 @@ class GameView(arcade.Window):
         self.score = 0
         self.high_score = 0
 
+        self.base_speed = 500
+        self.speed = self.base_speed
+
+        self.boost_active = False
+        self.boost_timer = 0
+
+        self.obstacles_for_boost = 0
+        
+    
+
     def spawn_obstacle(self):
 
         obstacle = arcade.Sprite("./ostacles.png", scale=0.4)
@@ -44,7 +54,13 @@ class GameView(arcade.Window):
         # spawn sopra la camera
         obstacle.center_y = self.sprite.center_y + WINDOW_HEIGHT
 
+        obstacle.passed = False
+
         self.obstacle_list.append(obstacle)
+
+        self.obstacle.passed = False
+
+
 
 
     def setup(self):
@@ -69,8 +85,19 @@ class GameView(arcade.Window):
 
     def reset(self):
         """Reset the game to the initial state."""
-        # Do changes needed to restart the game here if you want to support that
+
         pass
+        #serve a portare il gioco allo stato iniziale senza chiuderlo
+        self.score = 0
+        self.sprite.center_x = 100
+        self.sprite.center_y = 100
+        self.obstacle_list.clear()
+        self.spawn_timer = 0
+
+        self.speed = self.base_speed
+        self.boost_active = False
+        self.boost_timer = 0
+        self.obstacles_for_boost = 0
 
     def on_draw(self):
         """
@@ -102,19 +129,10 @@ class GameView(arcade.Window):
             self.obstacle_list.draw()
 
 
-
-        arcade.draw_text(
-    f"Ostacoli schivati: {self.score}",
-    20,
-    500,
-    arcade.color.WHITE,
-    20
-)
-
         arcade.draw_text(
             f"Score: {self.score}",
             20,
-            450,
+            750,
             arcade.color.WHITE,
             20
         )
@@ -122,15 +140,10 @@ class GameView(arcade.Window):
         arcade.draw_text(
             f"High Score: {self.high_score}",
             20,
-            320,
+            725,
             arcade.color.YELLOW,
             20
         )
-
-                
-
-
-                
 
     def on_update(self, delta_time):
 
@@ -164,20 +177,69 @@ class GameView(arcade.Window):
             print(len(self.obstacle_list))
             self.spawn_timer = 0
 
-        # collisioni
-        if arcade.check_for_collision_with_list(self.sprite, self.obstacle_list):
-            if self.score > self.high_score:
-                self.high_score = self.score
-                print("GAME OVER")
-
-                self.close()
-
         for obstacle in self.obstacle_list:
     
-            # se l'ostacolo è sotto il player significa che è stato schivato
+         """   # se l'ostacolo è sotto il player significa che è stato schivato
             if obstacle.center_y < self.sprite.center_y - 50:
                 self.score += 1
-                obstacle.remove_from_sprite_lists()   
+                obstacle.remove_from_sprite_lists()
+            
+            # Conta solo fuori dal boost
+        if not self.boost_active:
+            self.obstacles_for_boost += 1
+            print("Contatore:", self.obstacles_for_boost)  # DEBUG
+
+            if self.obstacles_for_boost == 15:
+                print("BOOST ATTIVATO")
+                self.boost_active = True
+                self.boost_timer = 10
+                self.speed = self.base_speed * 2
+                self.obstacles_for_boost = 0"""
+        
+        print(obstacle.passed)
+        if not obstacle.passed and obstacle.center_y < self.sprite.center_y:
+            obstacle.passed = True
+
+            self.score += 1
+
+            # Conta solo fuori dal boost
+            if not self.boost_active:
+                self.obstacles_for_boost += 1
+                print("Contatore:", self.obstacles_for_boost)
+
+                if self.obstacles_for_boost == 15:
+                    print("BOOST ATTIVATO")
+                    self.boost_active = True
+                    self.boost_timer = 10
+                    self.speed = self.base_speed * 2
+                    self.obstacles_for_boost = 0
+
+        if self.score > self.high_score:
+            self.high_score = self.score
+
+        if obstacle.center_y < self.sprite.center_y - WINDOW_HEIGHT:
+           obstacle.remove_from_sprite_lists()
+                
+     
+
+            # collisioni
+        if arcade.check_for_collision_with_list(self.sprite, self.obstacle_list):
+            print(self.score, self.high_score)
+            
+            print("GAME OVER")
+
+            self.reset()
+
+        self.sprite.center_y += self.speed * delta_time
+
+        if self.boost_active:
+          self.boost_timer -= delta_time
+
+        if self.boost_timer <= 0:
+            self.boost_active = False
+            self.speed = self.base_speed
+        
+            
 
     def on_key_press(self, key, modifiers):
         
