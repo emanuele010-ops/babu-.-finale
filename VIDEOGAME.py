@@ -41,8 +41,9 @@ class GameView(arcade.Window):
         self.boost_timer = 0
 
         self.obstacles_for_boost = 0
-        
-    
+
+        self.ostacoli_contati = []
+
 
     def spawn_obstacle(self):
 
@@ -57,10 +58,7 @@ class GameView(arcade.Window):
         obstacle.passed = False
 
         self.obstacle_list.append(obstacle)
-
-        self.obstacle.passed = False
-
-
+   
 
 
     def setup(self):
@@ -151,7 +149,7 @@ class GameView(arcade.Window):
         HORIZONTAL_SPEED = 550
 
         # Movimento automatico verso l'alto
-        self.sprite.center_y += SPEED * delta_time
+        self.sprite.center_y += self.speed * delta_time
 
         # Movimento destra/sinistra
         self.sprite.center_x += self.direction[0] * HORIZONTAL_SPEED * delta_time
@@ -178,47 +176,31 @@ class GameView(arcade.Window):
             self.spawn_timer = 0
 
         for obstacle in self.obstacle_list:
-    
-         """   # se l'ostacolo è sotto il player significa che è stato schivato
-            if obstacle.center_y < self.sprite.center_y - 50:
+            if not obstacle.passed and obstacle.center_y < self.sprite.center_y:
+                obstacle.passed = True
                 self.score += 1
+
+                # Conta solo fuori dal boost
+                if not self.boost_active:
+                    # se uno specifico ostacolo non è stato ancora contato, allora contiamolo
+                    if obstacle not in self.ostacoli_contati:
+                        self.obstacles_for_boost += 1
+                        # aggiungiamo obstacle a self.obstacle_contati
+                        self.ostacoli_contati.append(obstacle)
+                    print("Contatore:", self.obstacles_for_boost)
+
+                    if self.obstacles_for_boost >= 15:
+                        print("BOOST ATTIVATO")
+                        self.boost_active = True
+                        self.boost_timer = 5
+                        self.speed = self.base_speed * 1.6
+                        self.obstacles_for_boost = 0
+
+            if self.score > self.high_score:
+                self.high_score = self.score
+
+            if obstacle.center_y < self.sprite.center_y - WINDOW_HEIGHT:
                 obstacle.remove_from_sprite_lists()
-            
-            # Conta solo fuori dal boost
-        if not self.boost_active:
-            self.obstacles_for_boost += 1
-            print("Contatore:", self.obstacles_for_boost)  # DEBUG
-
-            if self.obstacles_for_boost == 15:
-                print("BOOST ATTIVATO")
-                self.boost_active = True
-                self.boost_timer = 10
-                self.speed = self.base_speed * 2
-                self.obstacles_for_boost = 0"""
-        
-        print(obstacle.passed)
-        if not obstacle.passed and obstacle.center_y < self.sprite.center_y:
-            obstacle.passed = True
-
-            self.score += 1
-
-            # Conta solo fuori dal boost
-            if not self.boost_active:
-                self.obstacles_for_boost += 1
-                print("Contatore:", self.obstacles_for_boost)
-
-                if self.obstacles_for_boost == 15:
-                    print("BOOST ATTIVATO")
-                    self.boost_active = True
-                    self.boost_timer = 10
-                    self.speed = self.base_speed * 2
-                    self.obstacles_for_boost = 0
-
-        if self.score > self.high_score:
-            self.high_score = self.score
-
-        if obstacle.center_y < self.sprite.center_y - WINDOW_HEIGHT:
-           obstacle.remove_from_sprite_lists()
                 
      
 
@@ -230,14 +212,13 @@ class GameView(arcade.Window):
 
             self.reset()
 
-        self.sprite.center_y += self.speed * delta_time
-
         if self.boost_active:
-          self.boost_timer -= delta_time
+            self.boost_timer -= delta_time
 
-        if self.boost_timer <= 0:
-            self.boost_active = False
-            self.speed = self.base_speed
+            if self.boost_timer <= 0:
+                print("BOOST FINITO")
+                self.boost_active = False
+                self.speed = self.base_speed
         
             
 
