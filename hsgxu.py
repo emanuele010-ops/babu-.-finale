@@ -120,7 +120,7 @@ class GameView(arcade.Window):
                 anchor_x="center", bold=True
             )
             arcade.draw_text(
-                "Premi SPACE per iniziare",
+                "Premi V per iniziare",
                 WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2,
                 arcade.color.WHITE, 28,
                 anchor_x="center"
@@ -193,7 +193,7 @@ class GameView(arcade.Window):
                 blink = int(self.gameover_timer * 2) % 2 == 0
                 if blink:
                     arcade.draw_text(
-                        "Premi SPACE per riprovare",
+                        "Premi V per riprovare",
                         WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 160,
                         arcade.color.WHITE,
                         22, anchor_x="center"
@@ -271,7 +271,7 @@ class GameView(arcade.Window):
                 self.speed = self.base_speed
  
     def on_key_press(self, key, modifiers):
-        if key == arcade.key.SPACE:
+        if key == arcade.key.V:
             if self.state == STATE_MENU:
                 self.state = STATE_PLAYING
             elif self.state == STATE_GAMEOVER and self.show_restart_prompt:
