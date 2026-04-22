@@ -4,7 +4,7 @@ import os
  
 WINDOW_WIDTH = 540
 WINDOW_HEIGHT = 800
-WINDOW_TITLE = "RUNNING CHIKEN"
+WINDOW_TITLE = "RUNNING PIGGEN"
  
 FRAME_WIDTH = 64
 FRAME_HEIGHT = 64
@@ -14,6 +14,7 @@ FRAME_DURATION = 0.07
  
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
  
+
 # Stati del gioco
 STATE_MENU = "menu"
 STATE_PLAYING = "playing"
