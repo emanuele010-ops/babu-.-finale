@@ -85,7 +85,7 @@ class GameView(arcade.Window):
         self.spawn_timer = 0
         self.sprite.center_x = WINDOW_WIDTH / 2
         self.sprite.center_y = 100
-        self.background = arcade.load_texture("../sfondo.jpg")
+        self.background = arcade.load_texture("./sfondo.jpg")
         self.playerSpriteList.append(self.sprite)
  
     def reset(self):
